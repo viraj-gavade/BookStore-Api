@@ -13,6 +13,7 @@ export class AuthController {
         return this.authService.SinUpUser(SignUpUserDto.email,SignUpUserDto.password,SignUpUserDto.username)
     }
 
+    @Post('signin')
     login(@Body() LoginUserDto:LoginUserDto){
         return this.authService.LoginUser(LoginUserDto.email,LoginUserDto.password)
     }
