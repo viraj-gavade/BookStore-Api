@@ -27,7 +27,7 @@ export class AuthService {
         if(!isPasswordCorrect){
             throw new Error('Invalid password')
         }
-        const payload = {sub:user.id, username : user.username}
+        const payload = {UserId:user.id, username : user.username}
         return {
              access_token: this.JwtService.sign(payload)
         }
