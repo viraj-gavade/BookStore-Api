@@ -27,9 +27,11 @@ export class AuthService {
         if(!isPasswordCorrect){
             throw new Error('Invalid password')
         }
+        console.log("Is Password Correct:-",isPasswordCorrect)
         const payload = {UserId:user.id, username : user.username}
+        const acccessToken = this.JwtService.sign(payload)
         return {
-             access_token: this.JwtService.sign(payload)
+             access_token: acccessToken
         }
     }
 }
