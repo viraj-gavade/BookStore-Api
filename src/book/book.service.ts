@@ -6,9 +6,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class BookService {
   constructor(private readonly prisma: PrismaService) {}
- async AddBook(createBookDto: CreateBookDto) {
-  return this.prisma.book.create({data:createBookDto})
-    
+  async AddBook(createBookDto: CreateBookDto) {
+    const { userId, ...bookData } = createBookDto;
+  
+    return this.prisma.book.create({
+      data: {
+        ...bookData,
+        user: {
+          connect: { id: userId }, // This establishes the relation
+        },
+      },
+    });
   }
 
   async GetAllBooks() {

@@ -1,29 +1,21 @@
-import { IsString ,IsNotEmpty, IsNumber, Min  } from "class-validator";
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateBookDto {
-    @IsString()
-    @IsNotEmpty()
-    title : string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    @IsNotEmpty()
-    author:string;
+  @IsString()
+  author: string;
 
-    @IsNumber()
-    @Min(1000)
-    PublishedAt : number;
+  @IsNumber()
+  publishedAt: number;
 
-    @IsString()
-    @IsNotEmpty()
-    genre:string;
+  @IsString()
+  genre: string;
 
-    @IsNumber()
-    @Min(0)
-    price: number
+  @IsNumber()
+  price: number;
 
-
-    
-
-
-
+  @IsNumber()
+  userId: number; // Ensure this field matches the relation in the schema
 }
