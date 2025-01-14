@@ -1,17 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException ,Res,Req} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import { JwtService } from '@nestjs/jwt';
+// import { Request,Response } from '@nestjs/common';
+import { Request,Response } from 'express';
 
 @Injectable()
 export class BookService {
-  constructor(private readonly prisma: PrismaService) {}
-  async AddBook(createBookDto: CreateBookDto,userId:number) { 
+  constructor(private readonly prisma: PrismaService,private jwtService:JwtService) {}
+  decodeToken(token: string): { UserId: number } | null {
+    try {
+      const decoded = this.jwtService.decode(token) as { UserId: number };  // Decode the token
+      return decoded ? decoded : null;  // Return the decoded userId or null
+    } catch (error) {
+      console.log(error)
+      return null;  // Return null in case of any errors
+    }
+  }
+
+  async AddBook(createBookDto: CreateBookDto, userId: number) {
+    // Use Prisma to create the book associated with the userId
     return this.prisma.book.create({
       data: {
-        ...createBookDto,
-        userId:userId
+        ...createBookDto, 
+        userId: userId, 
       },
     });
   }

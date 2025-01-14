@@ -1,21 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Req,Res } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth-gaurd';
+import { Request,Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
+// import { JwtAuthGuard } from 'src/auth/jwt-auth-gaurd';
 
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('book')
 export class BookController {
-  constructor(private readonly bookService: BookService) {}
+  constructor(private readonly bookService: BookService ,private jwtService:JwtService) {}
 
   
   @Post()
-  create(@Body() createBookDto: CreateBookDto, @Request() req:any) {
-    const userId = req.user.userId;
-    console.log("UserId",userId)
-    return this.bookService.AddBook(createBookDto,userId);
+  async create(
+    @Body() createBookDto: CreateBookDto, 
+    @Req() req: Request, 
+    @Res() res: Response
+  ) {
+    const token = req.cookies['access_token'];
+    console.log(token)  // Access token from cookies
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized - No Token Found' });
+    }
+
+    // Decode the token and extract the userId
+    const decodedPayload = this.bookService.decodeToken(token); 
+    console.log(decodedPayload)// Call decodeToken from the service
+    const userId = decodedPayload?.UserId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+    }
+
+    try {
+      // Pass userId along with createBookDto to the service method
+      const book = await this.bookService.AddBook(createBookDto, userId);
+      return res.status(201).json(book); 
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ message: 'Error adding book', error: error.message });
+    }
   }
 
   @Get()

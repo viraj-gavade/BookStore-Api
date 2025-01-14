@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from '@nestjs/common';
 
 
 @Injectable()
@@ -18,7 +19,7 @@ export class AuthService {
         })
     }
 
-    async LoginUser(email:string,password:string){
+    async LoginUser(email:string,password:string,response:any){
         const user = await this.prisma.user.findUnique({where:{email}})
         if(!user){
             throw new Error('User not found')
@@ -30,8 +31,11 @@ export class AuthService {
         console.log("Is Password Correct:-",isPasswordCorrect)
         const payload = {UserId:user.id, username : user.username}
         const acccessToken = this.JwtService.sign(payload)
+        response.cookie('access_token', acccessToken);
+   
         return {
-             access_token: acccessToken
+            message: 'Login successful',
         }
-    }
+     }
+
 }
