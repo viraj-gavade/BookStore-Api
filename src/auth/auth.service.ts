@@ -28,7 +28,6 @@ export class AuthService {
         if(!isPasswordCorrect){
             throw new Error('Invalid password')
         }
-        console.log("Is Password Correct:-",isPasswordCorrect)
         const payload = {UserId:user.id, username : user.username}
         const acccessToken = this.JwtService.sign(payload)
         response.cookie('access_token', acccessToken);

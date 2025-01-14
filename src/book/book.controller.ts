@@ -20,7 +20,6 @@ export class BookController {
     @Res() res: Response
   ) {
     const token = req.cookies['access_token'];
-    console.log(token)  // Access token from cookies
     
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized - No Token Found' });
@@ -28,7 +27,6 @@ export class BookController {
 
     // Decode the token and extract the userId
     const decodedPayload = this.bookService.decodeToken(token); 
-    console.log(decodedPayload)// Call decodeToken from the service
     const userId = decodedPayload?.UserId;
 
     if (!userId) {
@@ -40,7 +38,6 @@ export class BookController {
       const book = await this.bookService.AddBook(createBookDto, userId);
       return res.status(201).json(book); 
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Error adding book', error: error.message });
     }
   }

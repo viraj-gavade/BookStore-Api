@@ -14,7 +14,6 @@ export class BookService {
       const decoded = this.jwtService.decode(token) as { UserId: number };  // Decode the token
       return decoded ? decoded : null;  // Return the decoded userId or null
     } catch (error) {
-      console.log(error)
       return null;  // Return null in case of any errors
     }
   }
