@@ -15,7 +15,4 @@ export class CreateBookDto {
 
   @IsNumber()
   price: number;
-
-  @IsNumber()
-  userId: number; // Ensure this field matches the relation in the schema
 }

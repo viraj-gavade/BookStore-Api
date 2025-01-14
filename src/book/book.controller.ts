@@ -5,17 +5,17 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-gaurd';
 
 
-
+@UseGuards(JwtAuthGuard)
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
-  @UseGuards(JwtAuthGuard)
+  
   @Post()
   create(@Body() createBookDto: CreateBookDto, @Request() req:any) {
-    const user = req.user.userId;
-    console.log("UserId",user)
-    return this.bookService.AddBook(createBookDto);
+    const userId = req.user.userId;
+    console.log("UserId",userId)
+    return this.bookService.AddBook(createBookDto,userId);
   }
 
   @Get()
