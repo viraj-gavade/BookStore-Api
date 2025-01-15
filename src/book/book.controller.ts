@@ -67,7 +67,13 @@ export class BookController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookService.DeleteBook(+id);
+  remove(
+    @Param('id') id: string,
+    @Req() req: Request 
+  ) {
+    const token = req.cookies['access_token']; // Extract the access token from cookies
+    const decodedPayload = this.bookService.decodeToken(token); 
+    const userId = decodedPayload?.UserId;
+    return this.bookService.DeleteBook(+id,userId);
   }
 }

@@ -49,8 +49,11 @@ export class BookService {
  
   }
 
-  async DeleteBook(id: number) {
+  async DeleteBook(id: number,userId:number) {
    const book = await this.FindSingleBook(id)
+   if(userId !== book.userId){
+    throw new NotFoundException('You are Not Authorized to delete this book')
+   }
    if(!book) throw new NotFoundException('Book Not Found')
   return this.prisma.book.delete({where:{id}})
   }
