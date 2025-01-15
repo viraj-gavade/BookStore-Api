@@ -19,12 +19,12 @@ export class BookService {
     }
   }
 
-  async AddBook(createBookDto: CreateBookDto, userId: number) {
+  async AddBook(@Req() req: AuthenticatedRequest,createBookDto: CreateBookDto) {
     // Use Prisma to create the book associated with the userId
     return this.prisma.book.create({
       data: {
         ...createBookDto, 
-        userId: userId, 
+        userId: req.user.UserId, 
       },
     });
   }

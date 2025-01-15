@@ -26,7 +26,7 @@ export class BookController {
     }
     try {
       // Pass userId along with createBookDto to the service method
-      const book = await this.bookService.AddBook(createBookDto, userId);
+      const book = await this.bookService.AddBook(req,createBookDto);
       return res.status(201).json(book); 
     } catch (error) {
       return res.status(500).json({ message: 'Error adding book', error: error.message });
@@ -49,7 +49,7 @@ export class BookController {
     @Body() updateBookDto: UpdateBookDto, // Extract the book data from the request body
     @Req() req: AuthenticatedRequest // Access cookies or headers for authentication
   ) {
-    // Pass all arguments to the service method
+
     return this.bookService.UpdateBook(req,+id, updateBookDto);
   }
 
@@ -58,9 +58,6 @@ export class BookController {
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest 
   ) {
-    const token = req.cookies['access_token']; // Extract the access token from cookies
-    const decodedPayload = this.bookService.decodeToken(token); 
-    const userId = decodedPayload?.UserId;
     return this.bookService.DeleteBook(req,+id);
   }
 }

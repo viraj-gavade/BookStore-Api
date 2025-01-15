@@ -2,7 +2,7 @@ import { Body, Controller, Post,Res } from '@nestjs/common';
 import { SignUpUserDto } from './dto/SignUp-dto';
 import { LoginUserDto } from './dto/LoginUser-dto';
 import { AuthService } from './auth.service';
-
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -19,6 +19,13 @@ export class AuthController {
     ) {
         return this.AuthServices.LoginUser(LoginUserDto.email, LoginUserDto.password, response);
     }
-}
+    @Post('logout') // Endpoint for logout
+    async logout(@Res() res: Response) {
+      const result = await this.AuthServices.LogOutUser(res);
+      return res.status(200).json(result);
+    }
+  }
+    
+
 
 
