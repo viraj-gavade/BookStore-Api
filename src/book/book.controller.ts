@@ -4,6 +4,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Request,Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { AuthenticatedRequest } from 'src/auth/auth.middleware';
 // import { JwtAuthGuard } from 'src/auth/jwt-auth-gaurd';
 
 
@@ -16,23 +17,13 @@ export class BookController {
   @Post()
   async create(
     @Body() createBookDto: CreateBookDto, 
-    @Req() req: Request, 
+    @Req() req: AuthenticatedRequest, 
     @Res() res: Response
-  ) {
-    const token = req.cookies['access_token'];
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized - No Token Found' });
-    }
-
-    // Decode the token and extract the userId
-    const decodedPayload = this.bookService.decodeToken(token); 
-    const userId = decodedPayload?.UserId;
-
+  ) { 
+    const userId = req.user?.UserId;
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
     }
-
     try {
       // Pass userId along with createBookDto to the service method
       const book = await this.bookService.AddBook(createBookDto, userId);
@@ -43,8 +34,8 @@ export class BookController {
   }
 
   @Get()
-  findAll() {
-    return this.bookService.GetAllBooks();
+  findAll(@Req() req: Request) {
+    return this.bookService.GetAllBooks(req);
   }
 
   @Get(':id')
@@ -56,24 +47,20 @@ export class BookController {
   async updateBook(
     @Param('id') id: string, // Extract the 'id' from route parameters
     @Body() updateBookDto: UpdateBookDto, // Extract the book data from the request body
-    @Req() req: Request // Access cookies or headers for authentication
+    @Req() req: AuthenticatedRequest // Access cookies or headers for authentication
   ) {
-    const token = req.cookies['access_token']; // Extract the access token from cookies
-    const decodedPayload = this.bookService.decodeToken(token); 
-    const userId = decodedPayload?.UserId;
-  
     // Pass all arguments to the service method
-    return this.bookService.UpdateBook(+id, updateBookDto, userId);
+    return this.bookService.UpdateBook(req,+id, updateBookDto);
   }
 
   @Delete(':id')
   remove(
     @Param('id') id: string,
-    @Req() req: Request 
+    @Req() req: AuthenticatedRequest 
   ) {
     const token = req.cookies['access_token']; // Extract the access token from cookies
     const decodedPayload = this.bookService.decodeToken(token); 
     const userId = decodedPayload?.UserId;
-    return this.bookService.DeleteBook(+id,userId);
+    return this.bookService.DeleteBook(req,+id);
   }
 }

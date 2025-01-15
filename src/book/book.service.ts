@@ -3,6 +3,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { AuthenticatedRequest } from 'src/auth/auth.middleware';
 // import { Request,Response } from '@nestjs/common';
 import { Request,Response } from 'express';
 
@@ -28,7 +29,7 @@ export class BookService {
     });
   }
 
-  async GetAllBooks() {
+  async GetAllBooks(@Req() req: AuthenticatedRequest) {
    return this.prisma.book.findMany();
   }
 
@@ -39,19 +40,19 @@ export class BookService {
   }
 
 
-  async UpdateBook(id: number, updateBookDto: UpdateBookDto,userId:number) {
+  async UpdateBook(@Req() req: AuthenticatedRequest, id: number, updateBookDto: UpdateBookDto) {
     const book = await  this.prisma.book.findUnique({where:{id}})
     if(!book) throw new NotFoundException('Book Not Found')
-      if(userId !== book.userId){
+      if(req.user.UserId !== book.userId){
         throw new NotFoundException('You are Not Authorized to update this book')
       }
       return this.prisma.book.update({where:{id:book.id},data:updateBookDto})
  
   }
 
-  async DeleteBook(id: number,userId:number) {
+  async DeleteBook(@Req() req: AuthenticatedRequest,id: number) {
    const book = await this.FindSingleBook(id)
-   if(userId !== book.userId){
+   if(req.user.UserId !== book.userId){
     throw new NotFoundException('You are Not Authorized to delete this book')
    }
    if(!book) throw new NotFoundException('Book Not Found')
