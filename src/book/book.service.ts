@@ -39,9 +39,12 @@ export class BookService {
   }
 
 
-  async UpdateBook(id: number, updateBookDto: UpdateBookDto) {
+  async UpdateBook(id: number, updateBookDto: UpdateBookDto,userId:number) {
     const book = await  this.prisma.book.findUnique({where:{id}})
     if(!book) throw new NotFoundException('Book Not Found')
+      if(userId !== book.userId){
+        throw new NotFoundException('You are Not Authorized to update this book')
+      }
       return this.prisma.book.update({where:{id:book.id},data:updateBookDto})
  
   }

@@ -53,8 +53,17 @@ export class BookController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.bookService.UpdateBook(+id, updateBookDto);
+  async updateBook(
+    @Param('id') id: string, // Extract the 'id' from route parameters
+    @Body() updateBookDto: UpdateBookDto, // Extract the book data from the request body
+    @Req() req: Request // Access cookies or headers for authentication
+  ) {
+    const token = req.cookies['access_token']; // Extract the access token from cookies
+    const decodedPayload = this.bookService.decodeToken(token); 
+    const userId = decodedPayload?.UserId;
+  
+    // Pass all arguments to the service method
+    return this.bookService.UpdateBook(+id, updateBookDto, userId);
   }
 
   @Delete(':id')
