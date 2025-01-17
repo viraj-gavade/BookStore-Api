@@ -8,7 +8,7 @@ import { Response } from 'express';
 @Injectable()
 export class AuthService {
     constructor(private prisma:PrismaService, private JwtService:JwtService){}
-    async SinUpUser(email:string,password:string,username:string){
+    async RegisterUser(email:string,password:string,username:string){
         const hashedPassword = await bcrypt.hash(password, 10);
         return this.prisma.user.create({
             data:{
@@ -33,7 +33,7 @@ export class AuthService {
         response.cookie('access_token', acccessToken);
    
         return {
-            message: 'Login successful',
+            message: 'Login successfully!',
         }
      }
 
@@ -42,7 +42,7 @@ export class AuthService {
         response.clearCookie('access_token');
    
         return {
-            message: 'Logged Out successful',
+            message: 'Logged Out successfully!',
         }
      }
 }
