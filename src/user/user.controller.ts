@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get,Post,Req} from '@nestjs/common';
+import { Body, Controller, Delete, Get,Param,Post,Req} from '@nestjs/common';
 import { AuthenticatedRequest } from 'src/auth/auth.middleware';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -28,5 +28,15 @@ async UpdatePassword(@Req() req: AuthenticatedRequest,@Body() ChangePasswordDto 
 @Delete('delete')
 async deleteuser(@Req() req:AuthenticatedRequest){
   return this.userService.DeleteUser(req);
+}
+
+@Get(':id')
+async findsingleuser(@Req() req:AuthenticatedRequest , @Param('id') id:number){
+  return this.userService.GetSingleUser(req,+id);
+}
+
+@Get()
+async findallusers(@Req() req:AuthenticatedRequest){
+  return this.userService.GetAllUsers(req);
 }
 }

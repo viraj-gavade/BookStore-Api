@@ -42,6 +42,14 @@ export class UserService {
     async DeleteUser(@Req() req:AuthenticatedRequest){
         return this.prisma.user.delete({where:{id:req.user.UserId}})
     }
+
+    async GetSingleUser(@Req() req:AuthenticatedRequest,UserId: number){
+        return this.prisma.user.findUnique({where:{id:UserId}})
+    }
+
+    async GetAllUsers(@Req() req:AuthenticatedRequest){
+        return this.prisma.user.findMany({})
+    }
 } 
 
 
