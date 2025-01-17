@@ -4,6 +4,7 @@ import { AuthenticatedRequest} from 'src/auth/auth.middleware';
 import { ChangePasswordDto } from './dto/chnage-password-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import * as bcrypt from 'bcrypt';
+import { retry } from 'rxjs';
 
 
 @Injectable()
@@ -40,15 +41,24 @@ export class UserService {
     }
 
     async DeleteUser(@Req() req:AuthenticatedRequest){
-        return this.prisma.user.delete({where:{id:req.user.UserId}})
+        const user = await this.prisma.user.delete({where:{id:req.user.UserId}})
+        return { messsage:"User deleted", status:200 }
     }
 
     async GetSingleUser(@Req() req:AuthenticatedRequest,UserId: number){
-        return this.prisma.user.findUnique({where:{id:UserId}})
+        const user = await  this.prisma.user.findUnique({where:{id:UserId}})
+        if(!user){
+            return {message:'User not found',status:404}
+        }
+        return user
     }
 
     async GetAllUsers(@Req() req:AuthenticatedRequest){
-        return this.prisma.user.findMany({})
+        const users = await  this.prisma.user.findMany({})
+        if(!users){
+            return {message:'No users found',status:404}
+        }
+        return users
     }
 } 
 

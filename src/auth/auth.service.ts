@@ -22,7 +22,7 @@ export class AuthService {
     async LoginUser(email:string,password:string,response:any){
         const user = await this.prisma.user.findUnique({where:{email}})
         if(!user){
-            throw new Error('User not found')
+           return response.status(401).json({message:'Invalid email or password'})
         }
         const isPasswordCorrect = await bcrypt.compare(password,user.password)
         if(!isPasswordCorrect){
