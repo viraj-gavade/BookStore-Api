@@ -14,7 +14,7 @@ export class BookController {
   constructor(private readonly bookService: BookService ,private jwtService:JwtService) {}
 
   
-  @Post()
+  @Post('add')
   async create(
     @Body() createBookDto: CreateBookDto, 
     @Req() req: AuthenticatedRequest, 
@@ -33,13 +33,13 @@ export class BookController {
     }
   }
 
-  @Get()
+  @Get('')
   findAll(@Req() req: Request) {
     return this.bookService.GetAllBooks(req);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.bookService.FindSingleBook(+id);
   }
 

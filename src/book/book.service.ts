@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException ,Res,Req} from '@nestjs/common';
+import { Injectable, NotFoundException ,Res,Req, Param} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -20,17 +20,22 @@ export class BookService {
   }
 
   async AddBook(@Req() req: AuthenticatedRequest,createBookDto: CreateBookDto) {
+    const userId = req.user.UserId
     // Use Prisma to create the book associated with the userId
     return this.prisma.book.create({
       data: {
         ...createBookDto, 
-        userId: req.user.UserId, 
+        userId: userId, 
       },
     });
   }
 
   async GetAllBooks(@Req() req: AuthenticatedRequest) {
-   return this.prisma.book.findMany();
+   const books = await  this.prisma.book.findMany();
+   if(!books){
+    return {message:"No books found",status:404};
+   }
+   return books;
   }
 
   async FindSingleBook(id: number) {
@@ -42,9 +47,9 @@ export class BookService {
 
   async UpdateBook(@Req() req: AuthenticatedRequest, id: number, updateBookDto: UpdateBookDto) {
     const book = await  this.prisma.book.findUnique({where:{id}})
-    if(!book) throw new NotFoundException('Book Not Found')
-      if(req.user.UserId !== book.userId){
-        throw new NotFoundException('You are Not Authorized to update this book')
+    if(!book) return {message:'book not found! ',status:404}
+          if(req.user.UserId !== book.userId){
+        return {message:'You are not authorized to update this book',status:401}
       }
       return this.prisma.book.update({where:{id:book.id},data:updateBookDto})
  
@@ -53,9 +58,10 @@ export class BookService {
   async DeleteBook(@Req() req: AuthenticatedRequest,id: number) {
    const book = await this.FindSingleBook(id)
    if(req.user.UserId !== book.userId){
-    throw new NotFoundException('You are Not Authorized to delete this book')
-   }
-   if(!book) throw new NotFoundException('Book Not Found')
-  return this.prisma.book.delete({where:{id}})
+return {message:'You are not authorized to delete this book',status:401}
+}
+   if(!book) return {message:'book not found! ',status:404}
+  const books = await this.prisma.book.delete({where:{id}})
+  return {message:'book deleted successfully!',status:200};
   }
 }

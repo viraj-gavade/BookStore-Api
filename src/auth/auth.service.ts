@@ -26,7 +26,7 @@ export class AuthService {
         }
         const isPasswordCorrect = await bcrypt.compare(password,user.password)
         if(!isPasswordCorrect){
-            throw new Error('Invalid password')
+            return response.status(401).json({message:'Invalid email or password'})
         }
         const payload = {UserId:user.id, username : user.username}
         const acccessToken = this.JwtService.sign(payload)
