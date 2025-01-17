@@ -38,6 +38,10 @@ export class UserService {
         return this.prisma.user.update({where:{id:req.user.UserId},data:{password:hashedPassword}})
 
     }
+
+    async DeleteUser(@Req() req:AuthenticatedRequest){
+        return this.prisma.user.delete({where:{id:req.user.UserId}})
+    }
 } 
 
 

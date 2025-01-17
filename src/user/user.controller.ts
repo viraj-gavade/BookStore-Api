@@ -1,4 +1,4 @@
-import { Body, Controller, Get,Post,Req} from '@nestjs/common';
+import { Body, Controller, Delete, Get,Post,Req} from '@nestjs/common';
 import { AuthenticatedRequest } from 'src/auth/auth.middleware';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -23,5 +23,10 @@ async UpdateUserProfile(@Req() req: AuthenticatedRequest,@Body() UpdateUserDto:U
 @Post('changepass')
 async UpdatePassword(@Req() req: AuthenticatedRequest,@Body() ChangePasswordDto :ChangePasswordDto) {
   return this.userService.UpdatePassword(req,ChangePasswordDto);
+}
+
+@Delete('delete')
+async deleteuser(@Req() req:AuthenticatedRequest){
+  return this.userService.DeleteUser(req);
 }
 }
