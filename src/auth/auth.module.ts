@@ -6,15 +6,19 @@ import { AuthController } from './auth.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
+/**
+ * Authentication module configuration
+ * Configures JWT, services, controllers, and strategies for authentication
+ */
 @Module({
   imports: [
-    PassportModule,
+    PassportModule, // Import Passport for authentication strategies
     JwtModule.register({
-      secret: process.env.SECRET_KEY,
+      secret: process.env.SECRET_KEY, // Use environment variable for JWT secret
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, PrismaService, JwtStrategy],
-  exports:[JwtModule]
+  exports:[JwtModule] // Export JWT module to be available in other modules
 })
 export class AuthModule {}

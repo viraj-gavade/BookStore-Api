@@ -4,32 +4,47 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+/**
+ * Configuration for Prisma Client generation
+ * This section defines how the Prisma client is generated
+ */
 generator client {
   provider = "prisma-client-js"
 }
 
+/**
+ * Database connection configuration
+ * Specifies the database provider and connection URL
+ */
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
+/**
+ * User model representing application users
+ * Contains authentication information and relations to books
+ */
 model User {
-  id        Int @id @default(autoincrement())
-  username  String @unique
-  email String @unique
-  password  String
-  books Book[]
+  id        Int @id @default(autoincrement()) // Unique identifier for the user
+  username  String @unique // Username for login, must be unique
+  email String @unique // User's email address, must be unique
+  password  String // Hashed password for authentication
+  books Book[] // One-to-many relation: a user can have multiple books
 }
 
 
-
+/**
+ * Book model representing books in the bookstore
+ * Contains book details and ownership information
+ */
 model Book {
-  id          Int     @id @default(autoincrement())
-  title       String
-  author      String
-  publishedAt Int
-  genre       String
-  price       Float
-  userId      Int
-  user        User    @relation(fields: [userId], references: [id])
+  id          Int     @id @default(autoincrement()) // Unique identifier for the book
+  title       String // Title of the book
+  author      String // Author of the book
+  publishedAt Int // Publication year
+  genre       String // Book genre/category
+  price       Float // Book price
+  userId      Int // Foreign key to the User model
+  user        User    @relation(fields: [userId], references: [id]) // Many-to-one relation: many books can belong to one user
 }
